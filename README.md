@@ -14,13 +14,13 @@ Support crate for the [STM32F411E-DISCO](https://www.st.com/en/evaluation-tools/
     - `LD1` red/green - USB communication
     - `LD2` red - 3.3V power on
     - 4 user LEDs
-        - `LD3` orange
-        - `LD4` green
-        - `LD5` red
-        - `LD6` blue
+        - `LD3:PD13` Orange
+        - `LD4:PD12` Green
+        - `LD5:PD14` Red
+        - `LD6:PD15` Blue
     - 2 USB OTG LEDs
-        - `LD7` green - VBus
-        - `LD8` red - over-current
+        - `LD7:PA9` green - VBus
+        - `LD8:PD5` red - over-current
 - 2 buttons (user and reset)
 - USB OTG with micro-AB connector
 

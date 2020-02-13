@@ -10,7 +10,7 @@ extern crate panic_semihosting;
 use cortex_m_rt::entry;
 use f411::{
     hal::{delay::Delay, prelude::*, stm32},
-    led::Led,
+    led::{Led, Compass},
 };
 
 #[entry]
@@ -22,9 +22,12 @@ fn main() -> ! {
 
     let gpiod = peripherals.GPIOD.split();
 
-    let mut led = gpiod.pd12.into_push_pull_output();
+    let mut compass = Compass::new(gpiod);
 
-    led.set_high();
+    compass.n.on();
+    compass.e.on();
+    compass.s.on();
+    compass.w.on();
 
     loop {}
 }

@@ -1,175 +1,164 @@
-// //! On-board user LEDs
+// # On-board user LEDs
 
-// use core::ops;
+use core::ops;
 
-// use hal::prelude::*;
+use hal::prelude::*;
 
-// use hal::gpio::gpioe::{self, PEx, PE10, PE11, PE12, PE13, PE14, PE15, PE8, PE9};
-// use hal::gpio::{Output, PushPull};
+use hal::gpio::gpioa::{self, PA, PA9};
+use hal::gpio::gpiod::{self, PD, PD5, PD12, PD13, PD14, PD15};
+use hal::gpio::{Output, PushPull};
 
-// ///  North LED
-// pub type LD3 = PE9<Output<PushPull>>;
+/// ## USB LEDs
 
-// /// Northeast LED
-// pub type LD5 = PE10<Output<PushPull>>;
+/// `LD7:PA9` Green / indicates when VBUS is present CN5
+// pub type LD7 = PA9<Output<PushPull>>;
 
-// /// East LED
-// pub type LD7 = PE11<Output<PushPull>>;
+/// `LD8:PD5` Red / indicates an overcurrent from VBUS of CN5
+pub type LD8 = PD5<Output<PushPull>>;
 
-// /// Southeast LED
-// pub type LD9 = PE12<Output<PushPull>>;
+/// ## User LEDs
 
-// /// South LED
-// pub type LD10 = PE13<Output<PushPull>>;
+/// `LD3:PD13` Orange / North
+pub type LD3 = PD13<Output<PushPull>>;
 
-// /// Southwest LED
-// pub type LD8 = PE14<Output<PushPull>>;
+/// `LD5:PD14` Red / East
+pub type LD5 = PD14<Output<PushPull>>;
 
-// /// West LED
-// pub type LD6 = PE15<Output<PushPull>>;
+/// `LD6:PD15` Blue / South
+pub type LD6 = PD15<Output<PushPull>>;
 
-// /// Northwest LED
-// pub type LD4 = PE8<Output<PushPull>>;
+/// `LD4:PD12` Green / West
+pub type LD4 = PD12<Output<PushPull>>;
 
-// /// Cardinal directions. Each one matches one of the user LEDs.
-// pub enum Direction {
-//     /// North / LD3
-//     North,
-//     /// Northeast / LD5
-//     Northeast,
-//     /// East / LD7
-//     East,
-//     /// Southeast / LD9
-//     Southeast,
-//     /// South / LD10
-//     South,
-//     /// Southwest / LD8
-//     Southwest,
-//     /// West / LD6
-//     West,
-//     /// Northwest / LD4
-//     Northwest,
-// }
+/// Cardinal directions. Each one matches one of the user LEDs.
+pub enum Direction {
+    North,  // LD3
+    East,   // LD5
+    South,  // LD6
+    West,   // LD4
+}
 
-// /// Array of all the user LEDs on the board
-// pub struct Leds {
-//     leds: [Led; 8],
-// }
+/// One of the on-board user LEDs
+pub struct Led {
+    pex: PD<Output<PushPull>>,
+}
 
-// impl Leds {
-//     /// Initializes all the user LEDs
-//     pub fn new(mut gpioe: gpioe::Parts) -> Self {
-//         let n = gpioe
-//             .pe9
-//             .into_push_pull_output(&mut gpioe.moder, &mut gpioe.otyper);
-//         let ne = gpioe
-//             .pe10
-//             .into_push_pull_output(&mut gpioe.moder, &mut gpioe.otyper);
-//         let e = gpioe
-//             .pe11
-//             .into_push_pull_output(&mut gpioe.moder, &mut gpioe.otyper);
-//         let se = gpioe
-//             .pe12
-//             .into_push_pull_output(&mut gpioe.moder, &mut gpioe.otyper);
-//         let s = gpioe
-//             .pe13
-//             .into_push_pull_output(&mut gpioe.moder, &mut gpioe.otyper);
-//         let sw = gpioe
-//             .pe14
-//             .into_push_pull_output(&mut gpioe.moder, &mut gpioe.otyper);
-//         let w = gpioe
-//             .pe15
-//             .into_push_pull_output(&mut gpioe.moder, &mut gpioe.otyper);
-//         let nw = gpioe
-//             .pe8
-//             .into_push_pull_output(&mut gpioe.moder, &mut gpioe.otyper);
+/// Array of all the user LEDs on the board
+pub struct Leds {
+    leds: [Led; 4],
+}
 
-//         Leds {
-//             leds: [
-//                 n.into(),
-//                 ne.into(),
-//                 e.into(),
-//                 se.into(),
-//                 s.into(),
-//                 sw.into(),
-//                 w.into(),
-//                 nw.into(),
-//             ],
-//         }
-//     }
-// }
 
-// impl ops::Deref for Leds {
-//     type Target = [Led];
+impl Leds {
+    /// Initializes all the user LEDs
+    pub fn new(gpiod: gpiod::Parts) -> Self {
+        let n = gpiod.pd13.into_push_pull_output();
+        let e = gpiod.pd14.into_push_pull_output();
+        let s = gpiod.pd15.into_push_pull_output();
+        let w = gpiod.pd12.into_push_pull_output();
 
-//     fn deref(&self) -> &[Led] {
-//         &self.leds
-//     }
-// }
+        Leds {
+            leds: [
+                n.into(),
+                e.into(),
+                s.into(),
+                w.into(),
+            ],
+        }
+    }
+}
 
-// impl ops::DerefMut for Leds {
-//     fn deref_mut(&mut self) -> &mut [Led] {
-//         &mut self.leds
-//     }
-// }
+pub struct Compass {
+    pub n: Led,
+    pub e: Led,
+    pub s: Led,
+    pub w: Led,
+}
 
-// impl ops::Index<usize> for Leds {
-//     type Output = Led;
+impl Compass {
+    pub fn new(gpiod: gpiod::Parts) -> Self {
+        let n = gpiod.pd13.into_push_pull_output();
+        let e = gpiod.pd14.into_push_pull_output();
+        let s = gpiod.pd15.into_push_pull_output();
+        let w = gpiod.pd12.into_push_pull_output();
 
-//     fn index(&self, i: usize) -> &Led {
-//         &self.leds[i]
-//     }
-// }
+        Compass {
+            n: n.into(),
+            e: e.into(),
+            s: s.into(),
+            w: w.into(),
+        }
+    }
+}
 
-// impl ops::Index<Direction> for Leds {
-//     type Output = Led;
+impl ops::Deref for Leds {
+    type Target = [Led];
 
-//     fn index(&self, d: Direction) -> &Led {
-//         &self.leds[d as usize]
-//     }
-// }
+    fn deref(&self) -> &[Led] {
+        &self.leds
+    }
+}
 
-// impl ops::IndexMut<usize> for Leds {
-//     fn index_mut(&mut self, i: usize) -> &mut Led {
-//         &mut self.leds[i]
-//     }
-// }
+impl ops::DerefMut for Leds {
+    fn deref_mut(&mut self) -> &mut [Led] {
+        &mut self.leds
+    }
+}
 
-// impl ops::IndexMut<Direction> for Leds {
-//     fn index_mut(&mut self, d: Direction) -> &mut Led {
-//         &mut self.leds[d as usize]
-//     }
-// }
+impl ops::Index<usize> for Leds {
+    type Output = Led;
 
-// /// One of the on-board user LEDs
-// pub struct Led {
-//     pex: PEx<Output<PushPull>>,
-// }
+    fn index(&self, i: usize) -> &Led {
+        &self.leds[i]
+    }
+}
 
-// macro_rules! ctor {
-//     ($($ldx:ident),+) => {
-//         $(
-//             impl Into<Led> for $ldx {
-//                 fn into(self) -> Led {
-//                     Led {
-//                         pex: self.downgrade(),
-//                     }
-//                 }
-//             }
-//         )+
-//     }
-// }
+impl ops::Index<Direction> for Leds {
+    type Output = Led;
 
-// ctor!(LD3, LD4, LD5, LD6, LD7, LD8, LD9, LD10);
+    fn index(&self, d: Direction) -> &Led {
+        &self.leds[d as usize]
+    }
+}
 
-// impl Led {
-//     /// Turns the LED off
-//     pub fn off(&mut self) {
-//         self.pex.set_low()
-//     }
+impl ops::IndexMut<usize> for Leds {
+    fn index_mut(&mut self, i: usize) -> &mut Led {
+        &mut self.leds[i]
+    }
+}
 
-//     /// Turns the LED on
-//     pub fn on(&mut self) {
-//         self.pex.set_high()
-//     }
-// }
+impl ops::IndexMut<Direction> for Leds {
+    fn index_mut(&mut self, d: Direction) -> &mut Led {
+        &mut self.leds[d as usize]
+    }
+}
+
+macro_rules! ctor {
+    ($($ldx:ident),+) => {
+        $(
+            impl Into<Led> for $ldx {
+                fn into(self) -> Led {
+                    Led {
+                        pex: self.downgrade(),
+                    }
+                }
+            }
+        )+
+    }
+}
+
+ctor!(LD3, LD4, LD5, LD6, LD8);
+
+// these return Result<(), Infallible>
+// not sure what the correct way to handle a failure is
+impl Led {
+    /// Turns the LED off
+    pub fn off(&mut self) {
+        self.pex.set_low().unwrap();
+    }
+
+    /// Turns the LED on
+    pub fn on(&mut self) {
+        self.pex.set_high().unwrap();
+    }
+}
