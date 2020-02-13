@@ -4,7 +4,7 @@ use core::ops;
 
 use hal::prelude::*;
 
-use hal::gpio::gpioa::{self, PA, PA9};
+// use hal::gpio::gpioa::{self, PA, PA9};
 use hal::gpio::gpiod::{self, PD, PD5, PD12, PD13, PD14, PD15};
 use hal::gpio::{Output, PushPull};
 
