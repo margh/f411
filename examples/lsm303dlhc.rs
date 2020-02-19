@@ -1,7 +1,3 @@
-//! Interfacing the on-board LSM303DLHC (accelerometer + compass)
-
-#![deny(unsafe_code)]
-// #![deny(warnings)]
 #![no_std]
 #![no_main]
 
@@ -19,9 +15,14 @@ use f411::{
 fn main() -> ! {
     let p = stm32::Peripherals::take().unwrap();
 
-    // let mut flash = p.FLASH.constrain();
     let rcc = p.RCC.constrain();
-    let clocks = rcc.cfgr.freeze();
+    // flash setup done in HAL
+
+    // this clock setting works consistently
+    let clocks = rcc.cfgr.sysclk(64.mhz()).pclk1(32.mhz()).freeze();
+
+    // works intermittently?
+    // let clocks = rcc.cfgr.freeze();
 
     let gpiob = p.GPIOB.split();
     let scl = gpiob.pb6.into_alternate_af4();
@@ -38,10 +39,8 @@ fn main() -> ! {
     let temp = lsm303dlhc.temp().unwrap();
 
     hprintln!("accel={:?}", accel).unwrap();
-    hprintln!("mac={:?}", mag).unwrap();
+    hprintln!("mag={:?}", mag).unwrap();
     hprintln!("temp={:?}", temp).unwrap();
-
-    // asm::bkpt();
 
     loop {}
 }

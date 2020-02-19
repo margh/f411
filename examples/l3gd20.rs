@@ -6,8 +6,9 @@
 
 extern crate panic_semihosting;
 
-use cortex_m::asm;
 use cortex_m_rt::entry;
+use cortex_m_semihosting::{hprintln};
+
 use f411::{
     hal::{prelude::*, stm32, spi::Spi},
     l3gd20,L3gd20,
@@ -19,9 +20,7 @@ fn main() -> ! {
 
     let mut rcc = p.RCC.constrain();
 
-    let clocks = rcc.cfgr.freeze();
-    // TRY the other clock configuration
-    // let clocks = rcc.cfgr.sysclk(64.mhz()).pclk1(32.mhz()).freeze(&mut flash.acr);
+    let clocks = rcc.cfgr.sysclk(64.mhz()).pclk1(32.mhz()).freeze();
 
     let mut gpioa = p.GPIOA.split();
     let mut gpioe = p.GPIOE.split();
@@ -43,14 +42,12 @@ fn main() -> ! {
 
     // let mut l3gd20 = L3gd20::new(spi, nss).unwrap();
 
-    // // sanity check: the WHO_AM_I register always contains this value
+    // // // sanity check: the WHO_AM_I register always contains this value
     // assert_eq!(l3gd20.who_am_i().unwrap(), 0xD4);
 
-    // let _m = l3gd20.all().unwrap();
+    // let m = l3gd20.all().unwrap();
 
-    // // when you reach this breakpoint you'll be able to inspect the variable `_m` which contains the
-    // // gyroscope and the temperature sensor readings
-    // asm::bkpt();
+    // hprintln!("m={:?}", m);
 
     loop {}
 }
