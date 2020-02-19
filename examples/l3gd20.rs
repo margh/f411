@@ -18,15 +18,15 @@ use f411::{
 fn main() -> ! {
     let p = stm32::Peripherals::take().unwrap();
 
-    let mut rcc = p.RCC.constrain();
+    let rcc = p.RCC.constrain();
 
     let clocks = rcc.cfgr.sysclk(64.mhz()).pclk1(32.mhz()).freeze();
 
-    let mut gpioa = p.GPIOA.split();
-    let mut gpioe = p.GPIOE.split();
+    let gpioa = p.GPIOA.split();
+    let gpioe = p.GPIOE.split();
 
     let mut nss = gpioe.pe3.into_push_pull_output();
-    nss.set_high();
+    nss.set_high().unwrap();
 
     let sck = gpioa.pa5.into_alternate_af5();
     let miso = gpioa.pa6.into_alternate_af5();
@@ -40,14 +40,13 @@ fn main() -> ! {
         clocks,
     );
 
-    // let mut l3gd20 = L3gd20::new(spi, nss).unwrap();
+    let mut l3gd20 = L3gd20::new(spi, nss.into()).unwrap();
 
-    // // // sanity check: the WHO_AM_I register always contains this value
-    // assert_eq!(l3gd20.who_am_i().unwrap(), 0xD4);
+    // // sanity check: the WHO_AM_I register always contains this value
+    assert_eq!(l3gd20.who_am_i().unwrap(), 0xD4);
 
-    // let m = l3gd20.all().unwrap();
-
-    // hprintln!("m={:?}", m);
-
-    loop {}
+    loop {
+        let m = l3gd20.all().unwrap();
+        hprintln!("m={:?}", m).unwrap();
+    }
 }

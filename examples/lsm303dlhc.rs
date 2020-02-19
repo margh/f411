@@ -16,13 +16,8 @@ fn main() -> ! {
     let p = stm32::Peripherals::take().unwrap();
 
     let rcc = p.RCC.constrain();
-    // flash setup done in HAL
 
-    // this clock setting works consistently
     let clocks = rcc.cfgr.sysclk(64.mhz()).pclk1(32.mhz()).freeze();
-
-    // works intermittently?
-    // let clocks = rcc.cfgr.freeze();
 
     let gpiob = p.GPIOB.split();
     let scl = gpiob.pb6.into_alternate_af4();
@@ -34,13 +29,13 @@ fn main() -> ! {
 
     hprintln!("initialised lsm303dlhc").unwrap();
 
-    let accel = lsm303dlhc.accel().unwrap();
-    let mag = lsm303dlhc.mag().unwrap();
-    let temp = lsm303dlhc.temp().unwrap();
+    loop {
+        let accel = lsm303dlhc.accel().unwrap();
+        let mag = lsm303dlhc.mag().unwrap();
+        let temp = lsm303dlhc.temp().unwrap();
 
-    hprintln!("accel={:?}", accel).unwrap();
-    hprintln!("mag={:?}", mag).unwrap();
-    hprintln!("temp={:?}", temp).unwrap();
-
-    loop {}
+        hprintln!("accel={:?}", accel).unwrap();
+        hprintln!("mag={:?}", mag).unwrap();
+        hprintln!("temp={:?}", temp).unwrap();
+    }
 }
